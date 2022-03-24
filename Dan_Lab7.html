@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Postal Service</title>
+	</head>
+	<body>
+		<image src="iwd_ps_logo.png" width="50%" height="50%" />
+		
+		<!-- Create Parcel -->
+		<fieldset>
+			<legend>Create a Parcel</legend>
+			<div>
+				<strong>Destination: </strong>
+				<select id="createParcel_Destination" style="padding-right: 5px;">
+					<option>Alberta</option>
+					<option>British Columbia</option>
+					<option>Manitoba</option>
+					<option>New Brunswick</option>
+					<option>Newfoundland</option>
+					<option>Northwest Territories</option>
+					<option>Nova Scotia</option>
+					<option>Nunavut</option>
+					<option>Ontario</option>
+					<option>P.E.I</option>
+					<option>Quebec</option>
+					<option>Saskatchewan</option>
+					<option>Yukon</option>
+				</select>
+				<strong>Weight (g): </strong>
+				<input type="number" id="createParcel_Weight" value=0 style="padding-right: 5px;" />
+				<strong>Express Shipping: </strong>
+				<input type="checkbox" id="createParcel_expressShipping" style="transform: scale(1.5);" />
+				<br>
+				<input type="button" value="Create Parcel" onclick="createParcel();" style="margin-top: 10px;" />
+			</div>
+		</fieldset>
+		<br>
+		
+		<!-- Process Parcel -->
+		<fieldset>
+			<legend>Process a Parcel</legend>
+			<div>
+				<strong>Tracking Number: </strong>
+				<input type="text" id="tbTrackingNumber" maxlength=13 style="padding-right: 5px;" />
+				<strong>Set Status: </strong>
+				<select id="processParcel_Status">
+					<option>Shipped</option>
+					<option>In Transit</option>
+					<option>Delivered</option>
+				</select>
+				<br>
+				<input type="button" value="Process Parcel" onclick="processParcel();" style="margin-top: 10px;" />
+			</div>
+		</fieldset>
+		<br>
+		
+		<!-- Display Parcel -->
+		<fieldset>
+			<legend>Display Parcels</legend>
+			<div style="padding-bottom: 5px;">
+				<strong>Status: </strong>
+				<select id="displayParcelsFilter" onchange="displayParcels();">
+					<option selected>All</option>
+					<option>Processing</option>
+					<option>Shipped</option>
+					<option>In Transit</option>
+					<option>Delivered</option>
+				</select>
+			</div>
+			<div style="padding-bottom: 5px;"><strong>Tracking Number | Status | Destination | Weight | Express Shipping</strong></div>
+			<div id="displayParcelOutput">[Ouput the list of parcels here]</div>
+		</fieldset>
+		
+		<!-- Javascript -->
+		<script>
+			//Create a constructor for the Parcel object
+			function Parcel(trackingNumber, status, destination, weight, express) {
+				this.trackingNumber = trackingNumber;
+				this.status = status;
+				this.destination = destination;
+				this.weight = weight;
+				this.express = express;
+			}
+			//Create an array to store the parcel objects in global scope.
+			var parcelArray = [];
+			//Create some parcel objects and store them in the global parcels array.
+			parcelArray[0] = new Parcel(generateTrackingNumber(), "Processing", "Alberta", 100, false);
+			parcelArray[1] = new Parcel(generateTrackingNumber(), "Processing", "Alberta", 200, false);
+			parcelArray[2] = new Parcel(generateTrackingNumber(), "Processing", "Alberta", 300, false);
+			parcelArray[3] = new Parcel(generateTrackingNumber(), "Shipped", "Alberta", 400, false);
+			parcelArray[4] = new Parcel(generateTrackingNumber(), "Shipped", "Alberta", 500, false);
+			parcelArray[5] = new Parcel(generateTrackingNumber(), "Shipped", "Alberta", 600, false);
+			parcelArray[6] = new Parcel(generateTrackingNumber(), "In Transit", "Alberta", 700, false);
+			parcelArray[7] = new Parcel(generateTrackingNumber(), "In Transit", "Alberta", 800, false);
+			parcelArray[8] = new Parcel(generateTrackingNumber(), "In Transit", "Alberta", 900, false);
+			parcelArray[9] = new Parcel(generateTrackingNumber(), "Delivered", "Alberta", 1000, false);
+			parcelArray[10] = new Parcel(generateTrackingNumber(), "Delivered", "Alberta", 1100, false);
+			parcelArray[11] = new Parcel(generateTrackingNumber(), "Delivered", "Alberta", 1200, false);
+			parcelArray[12] = new Parcel(generateTrackingNumber(), "Processing", "British Columbia", 1300, false);
+			parcelArray[13] = new Parcel(generateTrackingNumber(), "Processing", "British Columbia", 1400, false);
+			parcelArray[14] = new Parcel(generateTrackingNumber(), "Processing", "British Columbia", 1500, false);
+
+			//Create function createParcel()
+			function createParcel() {
+				//Get the values from the form
+				var trackingNumber = generateTrackingNumber();
+				var status = "Processing";
+				var destination = document.getElementById("createParcel_Destination").value;
+				var weight = document.getElementById("createParcel_Weight").value;
+				var express = document.getElementById("createParcel_expressShipping").checked;
+				var parcel = new Parcel(trackingNumber, status, destination, weight, express);
+				parcelArray.push(parcel);
+				displayParcels();//Call the displayParcels() function.
+			}
+
+			//Create function displayParcels()
+			function displayParcels() {
+				//Create a variable to store the output string.
+				var output = "";
+				var status = document.getElementById("displayParcelsFilter").value;
+				//If the value is “ALL”, ouput all the parcels in the global array.
+				if (status == "All") {
+					for (var i = 0; i < parcelArray.length; i++) {
+						output += parcelArray[i].trackingNumber + " | " + parcelArray[i].status + " | " + parcelArray[i].destination + " | " + parcelArray[i].weight + "(g)"+ " | " + parcelArray[i].express + "<br>";
+					}
+				} else {
+					//Otherwise, only output the parcels with the same status as the one selected.
+					for (var i = 0; i < parcelArray.length; i++) {
+						if (parcelArray[i].status == status) {
+							output += parcelArray[i].trackingNumber + " | " + parcelArray[i].status + " | " + parcelArray[i].destination + " | " + parcelArray[i].weight + " | " + parcelArray[i].express + "<br>";
+						}
+					}
+				}
+				//Output the parcels to the output div.
+				document.getElementById("displayParcelOutput").innerHTML = output;
+			}
+
+			//Create function processParcel()
+			function processParcel() {
+				//Get the values from the textbox and the dropdown
+				var trackingNumber = document.getElementById("tbTrackingNumber").value;
+				var status = document.getElementById("processParcel_Status").value;
+				var express = document.getElementById("createParcel_expressShipping").checked;
+				var parcel = null;
+				//Find the parcel in the array that matches the tracking number provided
+				for (var i = 0; i < parcelArray.length; i++) {
+					if (parcelArray[i].trackingNumber == trackingNumber) {
+						parcel = parcelArray[i];
+					}
+				}
+				//If the parcel isn’t found or no number was provided, alert the user
+				if (parcel == null) {
+					alert("Parcel not found");
+				} 
+				//Calculate the Cost of shipping for this parcel:
+				else {
+					parcel.status = status;
+					var cost = 5;
+					if (parcel.express) {
+						cost += 10;
+					}
+					cost += parcel.weight * 0.05;
+					cost *= 1.13;
+					//round the number to 2 decimal places and output the cost
+					alert("Shipping for Parcel: " + parcel.trackingNumber + "\n" + "$" + cost.toFixed(2));
+				}
+				//Call the displayParcels() function.
+				displayParcels();
+			}
+			/*
+				generateTrackingNumber()
+				Purpose: Helper function - generates a random tracking number
+				Parameters: none
+				Returns: string
+			*/
+			function generateTrackingNumber()
+			{
+				const TN_LENGTH = 10;
+				const TN_PREFIX = "IWD";
+				var tokens = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','0'];
+				var trackingNumber = new String(TN_PREFIX);
+				for(var x = 0; x < TN_LENGTH; x++) {
+					trackingNumber = trackingNumber.concat( tokens[ Math.floor( Math.random() * tokens.length ) ] );
+				}
+				//console.log("Generated: " + trackingNumber);
+				return trackingNumber;
+			}
+            
+		</script>
+	</body>
+</html>
